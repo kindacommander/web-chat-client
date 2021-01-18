@@ -4,19 +4,24 @@ import 'dart:convert';
 import 'package:web_chat_client/src/msg/message.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({Key key, this.title}) : super(key: key);
+  LoginScreen({@required this.onLogin, Key key, this.title}) : super(key: key);
 
   final String title;
+  final VoidCallback onLogin;
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  LoginScreenState createState() => LoginScreenState(onLogin: onLogin);
 }
 
 class LoginScreenState extends State<LoginScreen> {
   final textStyle = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   final loginController = TextEditingController();
 
+  LoginScreenState({@required this.onLogin});
+
   IOWebSocketChannel wsChannel;
+
+  final VoidCallback onLogin;
 
   bool isLoggedIn = false;
 
@@ -41,13 +46,10 @@ class LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () {
           setState(() {
-            wsChannel = IOWebSocketChannel.connect('ws://192.168.31.103:8080/ws');
-          });
-          var msg = Message(sender: "System", body: "New User: " + loginController.text);
-          wsChannel.sink.add(json.encode(msg));
-          setState(() {
+            wsChannel = IOWebSocketChannel.connect('ws://192.168.31.103:8080/ws?username=' + loginController.text);
             isLoggedIn = true;
           });
+          onLogin();
         },
         child: Text("Login",
           textAlign: TextAlign.center,
