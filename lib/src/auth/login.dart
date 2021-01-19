@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
-import 'dart:convert';
-import 'package:web_chat_client/src/msg/message.dart';
+import 'package:web_chat_client/src/ws_connection.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({@required this.onLogin, Key key, this.title}) : super(key: key);
 
   final String title;
-  final VoidCallback onLogin;
+  final Function(WSConnection) onLogin;
 
   @override
   LoginScreenState createState() => LoginScreenState(onLogin: onLogin);
@@ -19,9 +18,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   LoginScreenState({@required this.onLogin});
 
-  IOWebSocketChannel wsChannel;
-
-  final VoidCallback onLogin;
+  final Function(WSConnection) onLogin;
 
   bool isLoggedIn = false;
 
@@ -46,10 +43,11 @@ class LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () {
           setState(() {
-            wsChannel = IOWebSocketChannel.connect('ws://192.168.31.103:8080/ws?username=' + loginController.text);
             isLoggedIn = true;
           });
-          onLogin();
+          var wsConn = WSConnection(loginController.text);
+          // TODO handle server response
+          onLogin(wsConn);
         },
         child: Text("Login",
           textAlign: TextAlign.center,

@@ -9,13 +9,7 @@ class Message {
   final String sender;
   final String body;
 
-  factory Message.fromJson(Map<String, String> json) => _$MessageFromJson(json);
+  factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
 
-  // TODO why does not it work?
-  //Map<String, String> toJson() => _$MessageToJson(this);
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    'sender': this.sender,
-    'body': this.body,
-  };
+  Map<String, dynamic> toJson() => _$MessageToJson(this);
 }

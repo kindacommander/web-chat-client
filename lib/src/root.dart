@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:web_chat_client/src/auth/login.dart';
 import 'package:web_chat_client/src/chat.dart';
+import 'package:web_chat_client/src/ws_connection.dart';
 
 enum LoginState {
   loggedOut,
@@ -16,6 +17,14 @@ class Root extends StatefulWidget {
 
 class RootState extends State<Root> {
   LoginState loginState = LoginState.loggedOut;
+  WSConnection wsConnection;
+
+  void onLogin(WSConnection wsConnection) {
+    setState(() {
+      this.wsConnection = wsConnection;
+      this.loginState = LoginState.loggedIn;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +35,8 @@ class RootState extends State<Root> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: loginState == LoginState.loggedOut
-          ? LoginScreen(title: 'Sign in', onLogin: () =>
-            setState(() {
-              this.loginState = LoginState.loggedIn;
-            })
-          )
-          : ChatScreen(title: "Chat"),
+          ? LoginScreen(title: 'Sign in', onLogin: this.onLogin)
+          : ChatScreen(title: "Chat", wsConnection: this.wsConnection),
     );
   }
 }
